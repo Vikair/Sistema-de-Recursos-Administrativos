@@ -1,0 +1,78 @@
+create schema sra;
+use sra;
+
+
+CREATE TABLE usuario (
+  id_usuario INT AUTO_INCREMENT PRIMARY KEY,
+  nome VARCHAR(100),
+  email VARCHAR(100),
+  senha VARCHAR(20),
+  adm INT(1)
+);
+
+create table tarefa_status (
+id_status int primary key auto_increment,
+nome_status varchar(60)
+
+);
+
+CREATE TABLE grupo (
+  id_grupo INT PRIMARY KEY AUTO_INCREMENT,
+  nome_grupo VARCHAR(50),
+  desc_grupo VARCHAR(250),
+  usuario_id INT,
+  id_usuario_criador INT,
+  CONSTRAINT fk_usugru FOREIGN KEY (usuario_id) REFERENCES usuario(id_usuario)
+);
+
+CREATE TABLE colaborador_grupo (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  usuario_id INT,
+  grupo_id INT,
+  CONSTRAINT fk_usucola FOREIGN KEY (usuario_id) REFERENCES usuario(id_usuario),
+  CONSTRAINT fk_grucola FOREIGN KEY (grupo_id) REFERENCES grupo(id_grupo) ON DELETE CASCADE
+);
+
+CREATE TABLE tarefa (
+  id_tarefa INT AUTO_INCREMENT PRIMARY KEY,
+  nome_tarefa VARCHAR(100) NOT NULL,
+  desc_tarefa VARCHAR(255),
+  usuario_id INT,
+  grupo_id INT,
+  status_tarefa INT,
+  colaborador_id INT,
+  CONSTRAINT fk_tareco FOREIGN KEY (colaborador_id) REFERENCES colaborador_grupo(usuario_id),
+  CONSTRAINT fk_starefa FOREIGN KEY (status_tarefa) REFERENCES tarefa_status(id_status),
+  CONSTRAINT fk_usutar FOREIGN KEY (usuario_id) REFERENCES usuario(id_usuario),
+  CONSTRAINT fk_grutar FOREIGN KEY (grupo_id) REFERENCES grupo(id_grupo)
+
+);
+
+
+
+CREATE TABLE relatorio (
+  id_relatorio INT PRIMARY KEY AUTO_INCREMENT,
+  titulo VARCHAR(75),
+  descricao VARCHAR(1000),
+  data_relatorio DATE,
+  hora TIME
+);
+
+ALTER TABLE colaborador_grupo
+DROP FOREIGN KEY fk_grucola;
+
+ALTER TABLE colaborador_grupo
+ADD CONSTRAINT fk_grucola
+FOREIGN KEY (grupo_id)
+REFERENCES grupo(id_grupo)
+ON DELETE CASCADE;
+ALTER TABLE tarefa DROP FOREIGN KEY fk_tareco;
+ALTER TABLE tarefa MODIFY colaborador_id INT NULL;
+ALTER TABLE relatorio ADD aprovado BOOLEAN NOT NULL DEFAULT false;
+
+insert into usuario(nome,email,senha,adm)
+values ('Arnaldo Samuel','arnaldo221@gmail.com','arnaldose', 0),
+        ('kaio','kaio221@gmail.com','kaiose', 1); 
+        
+insert into tarefa_status(nome_status)
+VALUES ('A fazer'), ('Em andamento'), ('Concluída');
